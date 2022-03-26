@@ -1,4 +1,5 @@
  const fs = require('fs');
+ const cherioo = require('cherioo');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 //const express = require('express');
@@ -26,8 +27,8 @@ const puppeteer = require('puppeteer-core');
   });
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
 var data = page.content();
-
-  await fs.promises.writeFile('public/index.html', 'jjj');
+const $ = cheerio.load(data);
+  await fs.promises.writeFile('public/index.html', $.html());
 
 
  // await page.screenshot({ path: 'public/image.png' });
