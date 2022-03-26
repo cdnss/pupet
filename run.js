@@ -28,7 +28,7 @@ const puppeteer = require('puppeteer-core');
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
 var data = page.content();
 const $ = cheerio.load(data);
-  await fs.promises.writeFile('public/index.html', $.html());
+  await fs.promises.writeFile('public/index.html', `${$.html()} kkk`);
 
 
  // await page.screenshot({ path: 'public/image.png' });
