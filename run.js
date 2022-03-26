@@ -33,7 +33,7 @@ const puppeteer = require('puppeteer-core');
  const search_params = current_url.searchParams;
 
  const id = search_params.get('url');
- if(id = true){
+ if(id){
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
@@ -43,6 +43,8 @@ const puppeteer = require('puppeteer-core');
   const $ = cheerio.load(data);
   $("script").remove();
   await fs.promises.writeFile('public/index.html', `${$.html()}`);
+ } else {
+    await fs.promises.writeFile('public/index.html', `${id}`);
  }
 
  await browser.close();
