@@ -33,7 +33,7 @@ const puppeteer = require('puppeteer-core');
  const search_params = current_url.searchParams;
 
  const id = search_params.get('url');
- if(id.length > 0){
+ if(id = true){
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
