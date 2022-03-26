@@ -25,10 +25,12 @@ const puppeteer = require('puppeteer-core');
     height: 400,
     deviceScaleFactor: 1
   });
-await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
-var data = await page.content();
+await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle0' });
+
+const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+
 const $ = cheerio.load(data);
-  await fs.promises.writeFile('public/index.html', `${$.html()} kkk`);
+  await fs.promises.writeFile('public/index.html', `${$.html()}`);
 
 
  // await page.screenshot({ path: 'public/image.png' });
