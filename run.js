@@ -29,12 +29,12 @@ const puppeteer = require('puppeteer-core');
   height: 400,
   deviceScaleFactor: 1
  });
- 
+ var id = '';
  http.createServer(function (req, res) {
   var q = url.parse(req.url, true);
   var ik = q.query;
-  var id = ik.url;
-  
+  id += ik.url;
+ });
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
@@ -43,11 +43,8 @@ const puppeteer = require('puppeteer-core');
 
   const $ = cheerio.load(data);
   $("script").remove();
-  //await fs.promises.writeFile('public/index.html', `${$.html()}`);
-  res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write($.html());
-    return res.end();
- }).listen(8080);
+  await fs.promises.writeFile('public/index.html', `${$.html()}`);
+ 
 
  await browser.close();
 })();
