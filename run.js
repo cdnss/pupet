@@ -26,7 +26,8 @@ const puppeteer = require('puppeteer-core');
   });
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
 var data = page.content();
-  await fs.promises.writeFile('public/index.html', data);
+
+  await fs.promises.writeFile('public/index.html', 'jjj');
 
 
  // await page.screenshot({ path: 'public/image.png' });
