@@ -1,5 +1,6 @@
 const fs = require('fs');
 const url = require('url');
+var http = require('http');
 const cheerio = require('cheerio');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
@@ -28,12 +29,12 @@ const puppeteer = require('puppeteer-core');
   height: 400,
   deviceScaleFactor: 1
  });
- let ddd = page.url();
- const current_url = new URL(ddd);
- const search_params = current_url.searchParams;
-
- const id = search_params.get('url');
- if(id){
+ 
+ http.createServer(function (req, res) {
+  var q = url.parse(req.url, true);
+  var ik = q.query;
+  var id = ik.url;
+  
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
@@ -42,10 +43,11 @@ const puppeteer = require('puppeteer-core');
 
   const $ = cheerio.load(data);
   $("script").remove();
-  await fs.promises.writeFile('public/index.html', `${$.html()}`);
- } else {
-    await fs.promises.writeFile('public/index.html', `${id}`);
- }
+  //await fs.promises.writeFile('public/index.html', `${$.html()}`);
+  res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write($.html());
+    return res.end();
+ }).listen(8080);
 
  await browser.close();
 })();
