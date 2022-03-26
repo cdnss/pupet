@@ -3,7 +3,7 @@ const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 4040
+const port = process.env.PORT || 4040;
 
 (async () => {
  // await fs.promises.mkdir('public', { recursive: true });
