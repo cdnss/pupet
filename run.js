@@ -1,6 +1,9 @@
 // const fs = require('fs');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 4040
 
 (async () => {
  // await fs.promises.mkdir('public', { recursive: true });
@@ -23,6 +26,11 @@ const puppeteer = require('puppeteer-core');
     deviceScaleFactor: 1
   });
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
+var data = page.content();
+
+app.get('/', async (req, res) => {
+    await res.send(data)
+})
  // await page.screenshot({ path: 'public/image.png' });
   await browser.close();
 })();
