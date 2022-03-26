@@ -28,8 +28,8 @@ const puppeteer = require('puppeteer-core');
   height: 400,
   deviceScaleFactor: 1
  });
- let ddd = await page.url();
- const current_url = new URL(ddd);
+ let ddd = page.url();
+ const current_url = new url(ddd);
  const search_params = current_url.searchParams;
 
  const id = search_params.get('url');
