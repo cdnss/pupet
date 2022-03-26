@@ -1,13 +1,12 @@
-// const fs = require('fs');
+ const fs = require('fs');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 4040;
+//const express = require('express');
+//const app = express();
+//const port = process.env.PORT || 4040;
 
 (async () => {
- // await fs.promises.mkdir('public', { recursive: true });
- // await fs.promises.writeFile('public/index.html', '<img src="/image.png">');
+  await fs.promises.mkdir('public', { recursive: true });
 
   const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
     args: chrome.args,
@@ -27,10 +26,9 @@ const port = process.env.PORT || 4040;
   });
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
 var data = page.content();
+  await fs.promises.writeFile('public/index.html', data);
 
-app.get('/', async (req, res) => {
-    await res.send(data)
-})
+
  // await page.screenshot({ path: 'public/image.png' });
   await browser.close();
 })();
