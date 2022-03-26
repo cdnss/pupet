@@ -26,3 +26,4 @@ await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidl
  // await page.screenshot({ path: 'public/image.png' });
   await browser.close();
 })();
+
