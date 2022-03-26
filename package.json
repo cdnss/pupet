@@ -5,7 +5,6 @@
   },
   "dependencies": {
     "chrome-aws-lambda": "8.0.2",
-    "puppeteer-core": "8.0.0",
-    "axioos": "latest"
+    "puppeteer-core": "8.0.0"
   }
 }
