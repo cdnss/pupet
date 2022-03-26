@@ -29,14 +29,10 @@ const puppeteer = require('puppeteer-core');
   height: 400,
   deviceScaleFactor: 1
  });
- var id = '';
- http.createServer(function (req, res) {
-  var q = url.parse(req.url, true);
-  var ik = q.query;
-  id += ik.url;
- });
- if(id){
-  await page.goto(id, {
+ 
+ 
+  async function pup(url){
+  await page.goto(url, {
    waitUntil: 'networkidle0'
   });
 
@@ -44,10 +40,17 @@ const puppeteer = require('puppeteer-core');
 
   const $ = cheerio.load(data);
   $("script").remove();
-  await fs.promises.writeFile('public/index.html', `${$.html()}`);
- } else {
-    await fs.promises.writeFile('public/index.html', `${id}`);
+  return $.html();
+//  await fs.promises.writeFile('public/index.html', `${$.html()}`);
  }
-
+ http.createServer(function (req, res) {
+  var q = url.parse(req.url, true);
+  var ik = q.query;
+  var id = ik.url;
+  res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(pup(id));
+    return res.end();
+  
+ }).listen(8080);
  await browser.close();
 })();
