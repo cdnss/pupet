@@ -30,8 +30,8 @@ await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidl
 const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
 const $ = cheerio.load(data);
-
-  await fs.promises.writeFile('public/index.html', `${$.html().find("script").remove()}`);
+$("script").remove();
+  await fs.promises.writeFile('public/index.html', `${$.html()}`);
 
 
  // await page.screenshot({ path: 'public/image.png' });
