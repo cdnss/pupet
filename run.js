@@ -46,6 +46,6 @@ const puppeteer = require('puppeteer-core');
  } else {
   await fs.promises.writeFile('public/index.html', `add ?url`);
  }
-}
+
  await browser.close();
 })();
