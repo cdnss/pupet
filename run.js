@@ -1,10 +1,10 @@
-const fs = require('fs');
+//const fs = require('fs');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
 
 (async () => {
-  await fs.promises.mkdir('public', { recursive: true });
-  await fs.promises.writeFile('public/index.html', '<img src="/image.png">');
+ // await fs.promises.mkdir('public', { recursive: true });
+ // await fs.promises.writeFile('public/index.html', '<img src="/image.png">');
 
   const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
     args: chrome.args,
@@ -22,8 +22,7 @@ const puppeteer = require('puppeteer-core');
     height: 400,
     deviceScaleFactor: 1
   });
-
-  await page.setContent('<h1>Hello World!</h1>', { waitUntil: 'networkidle2' });
-  await page.screenshot({ path: 'public/image.png' });
+await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
+ // await page.screenshot({ path: 'public/image.png' });
   await browser.close();
 })();
