@@ -26,7 +26,7 @@ const puppeteer = require('puppeteer-core');
     deviceScaleFactor: 1
   });
 await page.goto('https://jutsuterlarang.blogspot.com/', { waitUntil: 'networkidle2' });
-var data = page.content();
+var data = await page.content();
 const $ = cheerio.load(data);
   await fs.promises.writeFile('public/index.html', `${$.html()} kkk`);
 
