@@ -43,7 +43,7 @@ const puppeteer = require('puppeteer-core');
   const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
   const $ = cheerio.load(data);
-  $("script").remove();
+  //$("script").remove();
   await fs.promises.writeFile('public/index.html', `${$.html()}`);
  } else {
     await fs.promises.writeFile('public/index.html', `${id}`);
