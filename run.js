@@ -1,18 +1,17 @@
-
+const fs = require('fs');
+const url = require('url');
+var http = require('http');
 const cheerio = require('cheerio');
 const chrome = require('chrome-aws-lambda');
 const puppeteer = require('puppeteer-core');
-module.exports = async (req, res) => {
-  const url = req.query.page;
+//const express = require('express');
+//const app = express();
+//const port = process.env.PORT || 4040;
 
-  try {
-    // check for https for safety!
-    if (!pageToScreenshot.includes("https://")) {
-      res.statusCode = 404;
-      res.json({
-        body: "Sorry, we couldn't screenshot that page. Did you include https://?",
-      });
-    }
+(async () => {
+ await fs.promises.mkdir('public', {
+  recursive: true
+ });
 
  const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
   args: chrome.args,
@@ -30,10 +29,14 @@ module.exports = async (req, res) => {
   height: 400,
   deviceScaleFactor: 1
  });
- 
- 
-  
-  await page.goto('https://jutsuterlarang.blogspot.com/', {
+ var id = 'https://jutsuterlarang.blogspot.com/';
+ http.createServer(function (req, res) {
+  var q = url.parse(req.url, true);
+  var ik = q.query;
+  id += ik.url;
+ });
+ if(id){
+  await page.goto(id, {
    waitUntil: 'networkidle0'
   });
 
@@ -41,25 +44,10 @@ module.exports = async (req, res) => {
 
   const $ = cheerio.load(data);
   $("script").remove();
-  
-  
   await fs.promises.writeFile('public/index.html', `${$.html()}`);
- 
- 
+ } else {
+    await fs.promises.writeFile('public/index.html', `${id}`);
+ }
+
  await browser.close();
- 
- 
-    res.statusCode = 200;
-    res.setHeader("Content-Type", `text/html`);
-
-    // return the file!
-    res.end($.html());
-  } catch (e) {
-    res.statusCode = 500;
-    res.json({
-      body: "Sorry, Something went wrong!",
-    });
-  }
-
- 
-};
+})();
