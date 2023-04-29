@@ -41,15 +41,15 @@ const puppeteer = require('puppeteer-core');
   });
 
 await Promise.race([
-  await page.waitForNavigation({ waitUntil: "networkidle0" }),
+  page.waitForNavigation({ waitUntil: "networkidle0" }),
   page.waitForSelector(".align-middle")
 ]);
 
 if (await page.$(".align-middle")) {
 
-  await fs.promises.writeFile('public/index.html', `erorr`);
+  //await fs.promises.writeFile('public/index.html', `erorr`);
  
-} else {
+//} else {
   
   const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
