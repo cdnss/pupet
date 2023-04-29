@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
  
  
   
-  await page.goto(url, {
+  await page.goto('https://jutsuterlarang.blogspot.com/', {
    waitUntil: 'networkidle0'
   });
 
