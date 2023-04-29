@@ -34,7 +34,7 @@ const puppeteer = require('puppeteer-core');
  });
 
  const page = await browser.newPage();
-
+ await page.setBypassCSP(true)
  await page.setViewport({
   width: 400,
   height: 400,
