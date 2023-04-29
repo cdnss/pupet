@@ -29,7 +29,7 @@ const puppeteer = require('puppeteer-core');
   height: 400,
   deviceScaleFactor: 1
  });
- var id = 'https://jutsuterlarang.blogspot.com/';
+ var id = 'https://liteapks.com/download/puffin-browser-pro-3924/1';
  http.createServer(function (req, res) {
   var q = url.parse(req.url, true);
   var ik = q.query;
