@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
   $("script").remove();
   
   
-//  await fs.promises.writeFile('public/index.html', `${$.html()}`);
+  await fs.promises.writeFile('public/index.html', `${$.html()}`);
  
  
  await browser.close();
