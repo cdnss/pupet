@@ -42,7 +42,7 @@ const puppeteer = require('puppeteer-core');
 
 await Promise.race([
   await page.waitForNavigation({ waitUntil: "networkidle0" }),
-  await page.waitForSelector(".align-middle")
+  page.waitForSelector(".align-middle")
 ]);
 
 if (await page.$(".align-middle")) {
