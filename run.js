@@ -36,37 +36,23 @@ const puppeteer = require('puppeteer-core');
   id += ik.url;
  });
  if(id){
+  page.waitForSelector(".align-middle");
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
 
-await Promise.race([
-  page.waitForNavigation({ waitUntil: "networkidle0" }),
-  page.waitForSelector(".align-middle")
-]);
 
-if (await page.$(".align-middle")) {
 
-  //await fs.promises.writeFile('public/index.html', `erorr`);
- 
-//} else {
-  
+
+
   const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
   const $ = cheerio.load(data);
   //$("script").remove();
   await fs.promises.writeFile('public/index.html', `${$.html()}`);
-}
-
-
- /* const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-
-  const $ = cheerio.load(data);
-  //$("script").remove();
-  await fs.promises.writeFile('public/index.html', `${$.html()}`);
- */
+ 
 } else {
-   // await fs.promises.writeFile('public/index.html', `${id}`);
+    await fs.promises.writeFile('public/index.html', `${id}`);
  }
 
  await browser.close();
