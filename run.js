@@ -14,13 +14,16 @@ const puppeteer = require('puppeteer-core');
  });
 
  const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
-  args: chrome.args,
+  args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
   executablePath: await chrome.executablePath,
   headless: chrome.headless
  }: {
-  args: [
-    '--disable-web-security',
-  ],
+  devtools: true,
+    args: [
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins',
+        '--disable-site-isolation-trials'
+    ],
   headless: false,
   executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
  });
