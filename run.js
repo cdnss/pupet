@@ -40,13 +40,33 @@ const puppeteer = require('puppeteer-core');
    waitUntil: 'networkidle0'
   });
 
+await Promise.race([
+  page.waitForNavigation({ waitUntil: "networkidle0" }),
+  page.waitForSelector(".progress")
+]);
+
+if (await page.$(".progress")) {
+
+  await fs.promises.writeFile('public/index.html', `erorr`);
+ 
+} else {
+  
   const data = await page.evaluate(() => document.querySelector('*').outerHTML);
 
   const $ = cheerio.load(data);
   //$("script").remove();
   await fs.promises.writeFile('public/index.html', `${$.html()}`);
- } else {
-    await fs.promises.writeFile('public/index.html', `${id}`);
+}
+
+
+ /* const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+
+  const $ = cheerio.load(data);
+  //$("script").remove();
+  await fs.promises.writeFile('public/index.html', `${$.html()}`);
+ */
+} else {
+   // await fs.promises.writeFile('public/index.html', `${id}`);
  }
 
  await browser.close();
