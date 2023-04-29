@@ -42,10 +42,10 @@ const puppeteer = require('puppeteer-core');
 
 await Promise.race([
   page.waitForNavigation({ waitUntil: "networkidle0" }),
-  page.waitForSelector(".progress")
+  page.waitForSelector(".align-middle")
 ]);
 
-if (await page.$(".progress")) {
+if (await page.$(".align-middle")) {
 
   await fs.promises.writeFile('public/index.html', `erorr`);
  
