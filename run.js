@@ -14,7 +14,12 @@ const puppeteer = require('puppeteer-core');
  });
 
  const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
-  args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+  
+    args: [...chrome.args,
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins',
+        '--disable-site-isolation-trials'
+    ],
   executablePath: await chrome.executablePath,
   headless: chrome.headless
  }: {
