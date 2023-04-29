@@ -15,11 +15,10 @@ const puppeteer = require('puppeteer-core');
 
  const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
   args: [
-     chrome.args,
-    '--disable-web-security'
+    '--disable-web-security',
   ],
   executablePath: await chrome.executablePath,
-  headless: chrome.headless
+  headless: false
  }: {
   args: [],
   executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
@@ -43,7 +42,7 @@ const puppeteer = require('puppeteer-core');
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
-  await page.waitForSelector(".align-middle");
+  page.waitForSelector(".align-middle");
 
 
 
