@@ -14,7 +14,10 @@ const puppeteer = require('puppeteer-core');
  });
 
  const browser = await puppeteer.launch(process.env.AWS_EXECUTION_ENV ? {
-  args: chrome.args,
+  args: [
+     chrome.args,
+    '--disable-web-security'
+  ],
   executablePath: await chrome.executablePath,
   headless: chrome.headless
  }: {
@@ -36,12 +39,11 @@ const puppeteer = require('puppeteer-core');
   id += ik.url;
  });
  if(id){
-  page.waitForSelector(".align-middle");
+
   await page.goto(id, {
    waitUntil: 'networkidle0'
   });
-
-
+  await page.waitForSelector(".align-middle");
 
 
 
