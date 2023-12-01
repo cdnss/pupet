@@ -30,7 +30,7 @@ const puppeteer = require('puppeteer-core');
         '--disable-site-isolation-trials'
     ],
   headless: false,
-  executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+  executablePath: '/Users/iliebogdanbarbulescu/Downloads/firstProject/node_modules/chromium/lib/chromium/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
  });
 
  const page = await browser.newPage();
