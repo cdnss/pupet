@@ -1,11 +1,6 @@
 sudo apt update -y
 sudo apt install qemu qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
-sudo systemctl enable --now libvirtd
-sudo systemctl enable --now virtlogd
 
-echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
-
-sudo modprobe kvm
 docker run -it \
     -e CPU=Penryn \
     -e ENABLE_KVM=' ' \
