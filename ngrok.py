@@ -2,8 +2,8 @@ import getpass
 
 from pyngrok import ngrok, conf
 
-print("Enter your authtoken, which can be copied from https://dashboard.ngrok.com/auth")
-conf.get_default().auth_token = getpass.getpass()
+#print("Enter your authtoken, which can be copied from https://dashboard.ngrok.com/auth")
+conf.get_default().auth_token = "2eGyEJzcdePNVkGXaSao5HUo7QO_Ci6EDAi5wmRYV99kZQNB"#getpass.getpass()
 
 # Open a TCP ngrok tunnel to the SSH server
 connection_string = ngrok.connect("22", "tcp").public_url
