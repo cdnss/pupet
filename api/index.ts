@@ -2,7 +2,7 @@ import { getContent } from "./_lib/puppeteer";
 
 module.exports = async function (req, res) {
   try {
-    const content = await getContent("https://vangke.xtgem.com");
+    const content = await getContent("https://doujindesu.tv/anata-no-semen-kaishuu-shimasu/");
     res.setHeader("Content-Type", "text/html");
     res.setHeader("Cache-Control", "public, immutable, no-transform, s-maxage=86400, max-age=86400");
     res.status(200).end(content);
