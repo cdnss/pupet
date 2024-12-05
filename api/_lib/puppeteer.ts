@@ -4,7 +4,7 @@ const chrome = require("@sparticuz/chromium")
 import Puppeteer from 'puppeteer-extra'
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 //let _page: Page | null;
-let _page = ""
+let _page = null
 Puppeteer.use(StealthPlugin());
 
 async function getPage() {
