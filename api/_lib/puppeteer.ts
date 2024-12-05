@@ -7,7 +7,8 @@ async function getPage() {
     const options = { 
         args: chrome.args,
         executablePath: await chrome.executablePath,
-        headless: chrome.headless
+        headless: chrome.headless,    
+        ignoreDefaultArgs: ['--disable-extensions']
     };
     const browser = await Puppeteer.launch(options);
     _page = await browser.newPage();
