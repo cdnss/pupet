@@ -1,14 +1,14 @@
 //import Puppeteer, { launch, Page } from "puppeteer-core";
 const chrome = require("@sparticuz/chromium")
 
-import Puppeteer, {launch, Page} from 'puppeteer-extra'
+import Puppeteer from 'puppeteer-extra'
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-let _page: Page | null;
-
+//let _page: Page | null;
+let _page = ""
 Puppeteer.use(StealthPlugin());
 
 async function getPage() {
-    if (_page) return _page;
+    //if (_page) return _page;
     const options = { 
         args: chrome.args,
         executablePath: await chrome.executablePath(),
