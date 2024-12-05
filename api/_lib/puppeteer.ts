@@ -1,5 +1,5 @@
 import Puppeteer, { launch, Page } from "puppeteer-core";
-import chrome from "@sparticuz/chromium";
+const chrome = require("@sparticuz/chromium")
 let _page: Page | null;
 
 async function getPage() {
