@@ -6,7 +6,7 @@ async function getPage() {
     if (_page) return _page;
     const options = { 
         args: chrome.args,
-        executablePath: await chrome.executablePath,
+        executablePath: await chrome.executablePath(),
         headless: chrome.headless,    
         ignoreDefaultArgs: ['--disable-extensions']
     };
