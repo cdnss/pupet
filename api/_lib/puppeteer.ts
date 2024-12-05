@@ -1,66 +1,18 @@
-//import Puppeteer, { launch, Page } from "puppeteer-core";
+import Puppeteer, { launch, Page } from "puppeteer-core";
 const chrome = require("@sparticuz/chromium")
- /*
-import Puppeteer from 'puppeteer-extra'
-require('puppeteer-extra-plugin-stealth/evasions/chrome.app')
-require('puppeteer-extra-plugin-stealth/evasions/chrome.csi')
-require('puppeteer-extra-plugin-stealth/evasions/chrome.loadTimes')
-require('puppeteer-extra-plugin-stealth/evasions/chrome.runtime')
-require('puppeteer-extra-plugin-stealth/evasions/defaultArgs') // pkg warned me this one was missing
-require('puppeteer-extra-plugin-stealth/evasions/iframe.contentWindow')
-require('puppeteer-extra-plugin-stealth/evasions/media.codecs')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.hardwareConcurrency')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.languages')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.permissions')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.plugins')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.vendor')
-require('puppeteer-extra-plugin-stealth/evasions/navigator.webdriver')
-require('puppeteer-extra-plugin-stealth/evasions/sourceurl')
-require('puppeteer-extra-plugin-stealth/evasions/user-agent-override')
-require('puppeteer-extra-plugin-stealth/evasions/webgl.vendor')
-require('puppeteer-extra-plugin-stealth/evasions/window.outerdimensions')
-*/
+let _page: Page | null;
 
-
-const { addExtra } = require('puppeteer-extra')
-const puppeteerExtra = addExtra(chrome.puppeteer)
-
-require('puppeteer-extra-plugin-stealth/evasions/chrome.app');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.csi');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.loadTimes');
-require('puppeteer-extra-plugin-stealth/evasions/chrome.runtime');
-require('puppeteer-extra-plugin-stealth/evasions/iframe.contentWindow');
-require('puppeteer-extra-plugin-stealth/evasions/media.codecs');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.hardwareConcurrency');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.languages');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.permissions');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.plugins');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.vendor');
-require('puppeteer-extra-plugin-stealth/evasions/navigator.webdriver');
-require('puppeteer-extra-plugin-stealth/evasions/sourceurl');
-require('puppeteer-extra-plugin-stealth/evasions/user-agent-override');
-require('puppeteer-extra-plugin-stealth/evasions/webgl.vendor');
-require('puppeteer-extra-plugin-stealth/evasions/window.outerdimensions');
-require('puppeteer-extra-plugin-stealth/evasions/defaultArgs');
-require('puppeteer-extra-plugin-user-preferences');
-require('puppeteer-extra-plugin-user-data-dir');
-
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-puppeteerExtra.use(StealthPlugin());
-
-//let _page: Page | null;
-let _page = null
 
 
 async function getPage() {
-    //if (_page) return _page;
+    if (_page) return _page;
     const options = { 
         args: chrome.args,
         executablePath: await chrome.executablePath(),
         headless: chrome.headless,    
         ignoreDefaultArgs: ['--disable-extensions']
     };
-    const browser = await puppeteerExtra.launch(options);
+    const browser = await Puppeteer.launch(options);
     _page = await browser.newPage();
     return _page;
 }
