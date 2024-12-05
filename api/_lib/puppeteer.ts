@@ -22,7 +22,9 @@ async function getPage() {
 export async function getContent(url) {
     const page = await getPage();
     await page.goto(url);
-    await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 2 });
+    await page.waitForSelector('#anu img', {
+  visible: true,
+});
     // await page.waitForNavigation();
     const content = await page.content();
     return content;
