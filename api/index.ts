@@ -1,25 +1,15 @@
-const chromium = require('@sparticuz/chromium');
-const puppeteer = require('puppeteer-core');
-async function handler(event, context){
-    const browser = await puppeteer.launch({
-        args: chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(),
-        headless: chromium.headless,
-    });
+import { getContent } from "./_lib/puppeteer";
 
-    const page = await browser.newPage();
-    await page.goto('https://doujindesu.tv');
-
-    // Your Puppeteer automation here, e.g.,
-    const title = await page.title();
-
-    await browser.close();
-
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ title }),
-    };
-};
-
-export default handler;
+module.exports = async function (req, res) {
+  if (!req.query.url) return res.status(400).send("No url query specified.");
+  if (!checkUrl(req.query.url)) return res.status(400).send("Invalid url query specified.");
+  try {
+    const content = await getContent(req.query.url);
+    res.setHeader("Content-Type", "text/html");
+    res.setHeader("Cache-Control", "public, immutable, no-transform, s-maxage=86400, max-age=86400");
+    res.status(200).end(content);
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("The server encountered an error. You may have inputted an invalid query.");
+  }
+}
