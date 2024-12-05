@@ -1,12 +1,25 @@
-import { getScreenshot, getContent } from "./_lib/puppeteer";
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
+async function handler(event, context){
+    const browser = await puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+    });
 
-module.exports = async function (req, res) {
-  
-    const content = await getContent("https://xtgem.com");
-    res.setHeader("Content-Type", "text/html");
-    res.setHeader("Cache-Control", "public, immutable, no-transform, s-maxage=86400, max-age=86400");
-    res.status(200).end(content);
-  
-}
+    const page = await browser.newPage();
+    await page.goto('https://doujindesu.tv');
 
+    // Your Puppeteer automation here, e.g.,
+    const title = await page.title();
 
+    await browser.close();
+
+    return {
+        statusCode: 200,
+        body: JSON.stringify({ title }),
+    };
+};
+
+export default handler;
