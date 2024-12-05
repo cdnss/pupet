@@ -1,7 +1,7 @@
 //import Puppeteer, { launch, Page } from "puppeteer-core";
 const chrome = require("@sparticuz/chromium")
 
-const Puppeteer = require('puppeteer-extra');
+import Puppeteer, {launch, Page} from 'puppeteer-extra'
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 let _page: Page | null;
 
