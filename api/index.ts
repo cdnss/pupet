@@ -1,8 +1,6 @@
 import { getScreenshot, getContent } from "./_lib/puppeteer";
 
 module.exports = async function (req, res) {
-  if (!req.query.url) return res.status(400).send("No url query specified.");
-  if (!checkUrl(req.query.url)) return res.status(400).send("Invalid url query specified.");
   try {
     const content = await getContent("https://fb.com");
     res.setHeader("Content-Type", "text/html");
@@ -14,12 +12,4 @@ module.exports = async function (req, res) {
   }
 }
 
-function checkUrl(string, hostname) {
-  var url = "";
-  try {
-    url = new URL(string);
-  } catch (error) {
-    return false;
-  }
-  return true;
-}
+
