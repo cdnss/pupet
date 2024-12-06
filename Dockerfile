@@ -12,7 +12,7 @@ RUN npm install
 
 # Copy the rest of the application code
 COPY . .
-
+RUN npm install express
 # Install Chrome-AWS-Lambda runtime
 EXPOSE 8080
 
