@@ -1,5 +1,6 @@
 # Use the official Node.js 18 image as the base
 FROM node:18-alpine
+RUN apk update && apk upgrade
 RUN apk add --no-cache \
     chromium \
     libx11-xcb1 \
