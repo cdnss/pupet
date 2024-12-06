@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Install Chrome-AWS-Lambda runtime
-RUN npm install -g chrome-aws-lambda
+EXPOSE 8080
 
 # Command to run the Lambda function
 CMD ["node", "./api/index.ts"]
