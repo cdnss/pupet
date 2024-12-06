@@ -1,13 +1,35 @@
-import { getContent } from "./_lib/puppeteer";
+const express = require('express');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
-module.exports = async function (req, res) {
+const app = express();
+const port = 8080;
+
+// Konfigurasi Puppeteer Extra Stealth
+puppeteer.use(StealthPlugin());
+
+app.get('/scrape', async (req, res) => {
   try {
-    const content = await getContent("https://doujindesu.tv/anata-no-semen-kaishuu-shimasu/");
-    res.setHeader("Content-Type", "text/html");
-    res.setHeader("Cache-Control", "public, immutable, no-transform, s-maxage=86400, max-age=86400");
-    res.status(200).end(content);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    // Ganti URL dengan URL yang ingin Anda scrape
+    await page.goto('https://xtgem.com');
+
+    // Selektor CSS untuk mengambil data yang Anda inginkan
+    const data = await page.$$eval('.product-title', elements => {
+      return elements.map(element => element.textContent);
+    });
+
+    await browser.close();
+
+    res.json(data);
   } catch (error) {
-    console.error(error)
-    res.status(500).send("The server encountered an error. You may have inputted an invalid query.");
+    console.error(error);
+    res.status(500).send('Error during scraping');
   }
-}
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
