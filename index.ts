@@ -1,171 +1,190 @@
-import { Application, Router, Context } from "https://deno.land/x/oak@v12.6.1/mod.ts";
-import * as puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";import { assertEquals } from "https://deno.land/std@0.198.0/assert/mod.ts";
-import { serve } from "https://deno.land/std@0.198.0/http/server.ts";
-import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
-import { contentType } from "https://deno.land/std@0.198.0/media_types/mod.ts";
 
-interface RequestInfo {
-  url: string;
-  method: string;
-  headers: Record<string, string>;
-  body: string | null;
+import { serve } from "https://deno.land/std/http/server.ts";
+import { cheerio } from "https://deno.land/x/cheerio@1.0.7/mod.ts";
+
+const config = {
+  target: "https://doujindesu.tv",
+  ignoreList: [
+    "content-length",
+    /^cf\-/,
+    /^x\-forwarded\-/,
+    "x-real-ip",
+  ],
+  timeout: 5000, // Timeout in milliseconds
+};
+
+
+function options(): Promise<Response> {
+  const headers = {
+    "Access-Control-Allow-Origin": config.target,
+    "Access-Control-Allow-Methods": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Expose-Headers":
+      "Date, Etag, Content-Length, Accept-Ranges, Content-Range, Server, Location",
+    "Access-Control-Max-Age": "2073600",
+  };
+  const response = new Response(null, {
+    headers,
+    status: 204,
+  });
+  return Promise.resolve(response);
 }
 
-interface InterceptedRequest {
-  request: RequestInfo;
-  respond: (response: Response) => void;
-  continue: (overrides?: Partial<RequestInfo>) => void;
-  abort: (error: string) => void;
+function error(code: number): Promise<Response> {
+  const response = new Response(null, {
+    status: code,
+  });
+  return Promise.resolve(response);
 }
 
-interface Response {
-  status: number;
-  headers: Record<string, string>;
-  body: string | null;
-}
+async function proxy(request: Request) :Promise<Response>{
+  const { href, origin } = new URL(request.url);
+  const url = new URL(href.replace(origin, ""), config.target).toString();
 
-class RequestInterceptor {
-  private interceptedRequests: InterceptedRequest[] = [];
 
-  async intercept(page: Page, url: string) {
-    await page.setRequestInterception(true);
 
-    page.on("request", async (interceptedRequest) => {
-      const requestInfo: RequestInfo = {
-        url: interceptedRequest.url(),
-        method: interceptedRequest.method(),
-        headers: interceptedRequest.headers(),
-        body: interceptedRequest.postData() || null,
-      };
-
-      const continueFn = async (overrides?: Partial<RequestInfo>) => {
-        if (overrides) {
-          await interceptedRequest.continue({
-            ...overrides,
-            headers: { ...interceptedRequest.headers(), ...overrides.headers },
-          });
-        } else {
-          await interceptedRequest.continue();
-        }
-      };
-
-      const abortFn = (error: string) => {
-        interceptedRequest.abort(error);
-      };
-
-      const respondFn = async (response: Response) => {
-        await interceptedRequest.respond({
-          status: response.status,
-          headers: response.headers,
-          contentType: response.headers["content-type"] || "text/plain",
-          body: response.body || "",
-        });
-      };
-
-      const intercepted: InterceptedRequest = {
-        request: requestInfo,
-        respond: respondFn,
-        continue: continueFn,
-        abort: abortFn,
-      };
-
-      this.interceptedRequests.push(intercepted);
-    });
-  }
-
-  getRequests(): InterceptedRequest[] {
-    return this.interceptedRequests;
-  }
-}
-
-const app = new Application();
-const router = new Router();
-
-router.get("/", (ctx: Context) => {
-  ctx.response.body = "Hello world!";
-});
-
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-app.addEventListener("listen", ({ hostname, port, secure }) => {
-  console.log(
-    `Listening on: ${secure ? "https://" : "http://"}${
-      hostname ?? "localhost"
-    }:${port}`,
-  );
-});
-
-const PORT = 8000;
-await app.listen({ port: PORT });
-
-Deno.test("Request Interception Test", async (t) => {
-    const browser: Browser = await launch({ headless: true });
-    const page: Page = await browser.newPage();
-    const requestInterceptor = new RequestInterceptor();
-
-    const server = serve({ port: 8082, onListen: (x) => {
-      console.log("test server up")
-    } }, (req: Request) => {
-      const url = new URL(req.url);
-      if(url.pathname == "/data"){
-        return new Response(JSON.stringify({message: "Hello from Deno Server"}), {status: 200, headers: { "Content-Type": "application/json" }})
-      } else {
-        return new Response("Not Found", {status: 404, headers: { "Content-Type": "text/plain"}})
-      }
-
-    });
-    
-    try {
-
-    await requestInterceptor.intercept(page, "http://localhost:8082/data");
-    await page.goto("http://localhost:8082/data", { waitUntil: "networkidle0" });
-
-    const requests = requestInterceptor.getRequests();
-    
-    await t.step("Check if a request was intercepted", () => {
-        assertEquals(requests.length, 1);
-    });
-
-    await t.step("Check request details", () => {
-      const interceptedRequest = requests[0];
-      assertEquals(interceptedRequest.request.url, "http://localhost:8082/data");
-      assertEquals(interceptedRequest.request.method, "GET");
-    });
-
-    await t.step("Check respond method", async () => {
-      const interceptedRequest = requests[0];
-      const mockResponse: Response = {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Mocked Response" }),
-      };
-      interceptedRequest.respond(mockResponse);
-      const response = await page.evaluate(async () => {
-        const response = await fetch("http://localhost:8082/data");
-        return await response.json();
-      });
-      assertEquals(response, { message: "Mocked Response" });
-    });
-
-      await t.step("Check continue method", async () => {
-        const interceptedRequest = requests[0];
-
-        const originalResponse = await page.evaluate(async () => {
-          const response = await fetch("http://localhost:8082/data");
-          return await response.json();
-        });
-        
-        await page.goto("http://localhost:8082/data", { waitUntil: "networkidle0" });
-        interceptedRequest.continue();
-        const response = await page.evaluate(async () => {
-          const response = await fetch("http://localhost:8082/data");
-          return await response.json();
-        });
-        assertEquals(response, { message: "Hello from Deno Server" });
-      });
-    } finally {
-        browser.close();
-        server.close();
+  async function getProxyRequest(req: Request): Promise<Request> {
+    const { host } = new URL(url)
+   const init = {
+      body: req.body,
+      cache: req.cache,
+      headers: getRequestHeaders(req),
+      keepalive: req.keepalive,
+      method: req.method,
+      redirect: "follow" as RequestRedirect,
+    };
+    if (req.method == "POST") {
+      init.method = "POST";
     }
-});
+    return new Request(url, init);
+
+    function getRequestHeaders(_req: Request) {
+      const headers: Record<string, string> = {};
+      [..._req.headers.entries()].forEach((kv) => {
+        if (kv[0].toLowerCase() === "host") {
+          return (headers["host"] = host);
+        } else if (isIgnore(kv[0])) {
+          return;
+        } else {
+          return (headers[kv[0]] = kv[1]);
+        }
+      });
+      headers["referer"] = config.target;
+      headers["user-agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+      return headers;
+
+      function isIgnore(name: string) {
+        for (const i of config.ignoreList) {
+          if (typeof i === "string") {
+            if (i === name.toLocaleLowerCase()) {
+              return true;
+            }
+          }
+          if (i instanceof RegExp) {
+            if (i.test(name)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    }
+  }
+
+  async function getProxyResponse(req: Request): Promise<Response> {
+    let resp: Response;
+    try {
+      resp = await fetch(req, { signal: AbortSignal.timeout(config.timeout) });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        throw new Error('Request timeout');
+      }
+      throw err;
+    }
+
+    const headers = getResponseHeaders(resp);
+    const status = resp.status;
+    const body = resp.body;
+    return new Response(body, {
+      headers,
+      status,
+    });
+    return response;
+
+   function getResponseHeaders(_resp: Response): HeadersInit {
+      const _headers = _resp.headers;
+      const corsHeaders = {
+        "Access-Control-Allow-Origin": config.target,
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Expose-Headers": [..._headers.keys()].join(", "),
+        "Access-Control-Max-Age": "2073600",
+      };
+
+      const headers: Record<string, string> = {};
+      [..._headers.entries()].forEach(
+        (kv) => (headers[kv[0].toLocaleLowerCase()] = kv[1])
+      );
+      Object.entries(corsHeaders).forEach(
+        (kv) => (headers[kv[0].toLocaleLowerCase()] = kv[1])
+      );
+      return headers;
+    }
+
+  }
+
+  const proxyRequest = await getProxyRequest(request);
+  const proxyResponse = await getProxyResponse(proxyRequest);
+  const body = await proxyResponse.text();
+  var $ = "";
+  if (body.includes("html>")) {
+    $ = cheerio.load(body);
+  } else {
+    $ = cheerio.load(body, null, false);
+  }
+  $('script:contains("mydomain")').remove();
+  return new Response($.html(), {
+    headers: proxyResponse.headers,
+    status: proxyResponse.status,
+  });
+
+}
+
+function logError(request: Request, error: Error, url: string = "", proxyRequest?: Request, proxyResponse?: Response) {
+  const logObj = {
+    time: new Date().toISOString(),
+    type: "error",
+    url,
+    request: {
+      url: request.url,
+      method: request.method,
+      headers: [...request.headers.entries()],
+    },
+    proxyRequest,
+    proxyResponse,
+    error: {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    },
+  };
+  console.log(JSON.stringify(logObj));
+}
+
+async function handler(request: Request): Promise<Response> {
+  let response;
+  if (request.method === "OPTIONS") {
+    response = await options();
+  } else {
+    try {
+      response = await proxy(request);
+    } catch (err) {
+      logError(request, err, request.url);
+      response = await error(500);
+    }
+  }
+
+  return response;
+}
+
+serve(handler);
